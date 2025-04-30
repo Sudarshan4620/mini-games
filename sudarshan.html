@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Games for Office Breaks</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+    }
+    header {
+      background-color: #e0f7fa;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #00796b;
+    }
+    header p {
+      font-size: 1.2rem;
+      color: #555;
+    }
+    .games {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    .card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: #00796b;
+    }
+    .card p {
+      color: #666;
+      margin-bottom: 1rem;
+    }
+    canvas, .game-area {
+      margin-top: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #4db6ac;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #00897b;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mini Games for Office Breaks</h1>
+    <p>Take a quick break and recharge your mind!</p>
+  </header>
+  <main class="games">
+    <div class="card">
+      <h2>Quick Quiz</h2>
+      <p>Answer as many questions as you can in 60 seconds!</p>
+      <button onclick="startQuiz()">Play Now</button>
+      <div class="game-area" id="quiz-area"></div>
+    </div>
+    <div class="card">
+      <h2>Emoji Match</h2>
+      <p>Find pairs of matching emojis in record time!</p>
+      <button onclick="startEmojiMatch()">Play Now</button>
+      <div class="game-area" id="emoji-area"></div>
+    </div>
+    <div class="card">
+      <h2>Keyboard Ninja</h2>
+      <p>Type the words before time runs out!</p>
+      <button onclick="startTypingGame()">Play Now</button>
+      <div class="game-area" id="typing-area"></div>
+    </div>
+  </main>
+  <script>
+    // Quick Quiz
+    const questions = [
+      { q: 'Capital of France?', a: 'Paris' },
+      { q: '5 + 7 = ?', a: '12' },
+      { q: 'Color of the sky?', a: 'Blue' }
+    ];
+    function startQuiz() {
+      const area = document.getElementById('quiz-area');
+      area.innerHTML = '';
+      let score = 0, index = 0;
+      const input = document.createElement('input');
+      const question = document.createElement('div');
+      const scoreEl = document.createElement('div');
+      question.innerText = questions[index].q;
+      input.placeholder = 'Type answer...';
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          if (input.value.trim().toLowerCase() === questions[index].a.toLowerCase()) score++;
+          index++;
+          if (index < questions.length) {
+            question.innerText = questions[index].q;
+            input.value = '';
+          } else {
+            area.innerHTML = `You scored ${score} out of ${questions.length}!`;
+          }
+        }
+      };
+      area.append(question, input, scoreEl);
+      input.focus();
+    }
+
+    // Emoji Match
+    function startEmojiMatch() {
+      const area = document.getElementById('emoji-area');
+      area.innerHTML = '';
+      const emojis = ['😀','😀','🐶','🐶','🍎','🍎','🎮','🎮'];
+      emojis.sort(() => 0.5 - Math.random());
+      let first = null, second = null, matched = 0;
+      emojis.forEach((emoji, idx) => {
+        const btn = document.createElement('button');
+        btn.textContent = '?';
+        btn.onclick = () => {
+          if (btn.textContent !== '?') return;
+          btn.textContent = emoji;
+          if (!first) {
+            first = { btn, emoji };
+          } else if (!second) {
+            second = { btn, emoji };
+            if (first.emoji === second.emoji) {
+              matched++;
+              first = second = null;
+              if (matched === emojis.length / 2) area.innerHTML = 'You matched all emojis!';
+            } else {
+              setTimeout(() => {
+                first.btn.textContent = '?';
+                second.btn.textContent = '?';
+                first = second = null;
+              }, 800);
+            }
+          }
+        };
+        area.appendChild(btn);
+      });
+    }
+
+    // Keyboard Ninja
+    function startTypingGame() {
+      const area = document.getElementById('typing-area');
+      area.innerHTML = '';
+      const words = ['focus', 'coffee', 'break', 'keyboard'];
+      let index = 0;
+      const wordEl = document.createElement('div');
+      wordEl.innerText = words[index];
+      const input = document.createElement('input');
+      input.placeholder = 'Type word...';
+      input.oninput = () => {
+        if (input.value.trim() === words[index]) {
+          index++;
+          if (index < words.length) {
+            wordEl.innerText = words[index];
+            input.value = '';
+          } else {
+            area.innerHTML = 'Great job, Keyboard Ninja!';
+          }
+        }
+      };
+      area.append(wordEl, input);
+      input.focus();
+    }
+  </script>
+</body>
+</html>
